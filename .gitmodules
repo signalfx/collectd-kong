@@ -1,0 +1,3 @@
+[submodule "test/integration/sfx"]
+	path = test/integration/sfx
+	url = git@github.com:signalfx/kong-plugin-signalfx.git

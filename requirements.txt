@@ -1,0 +1,3 @@
+requests==2.18.4
+six==1.11.0
+https://github.com/signalfx/collectd-common/archive/utils-v0.0.1.zip#subdirectory=utils

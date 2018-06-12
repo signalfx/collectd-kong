@@ -1,0 +1,12 @@
+*.cache/
+*.dist-info/
+*.egg-info/
+*.py[co]
+*.pytest_cache
+.coverage
+.python-version
+.tox
+build/
+collectd.d/
+dist/
+htmlcov/
