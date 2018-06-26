@@ -43,6 +43,8 @@ class Reporter(object):
         read_kwargs = {}
         if self.config.interval:
             read_kwargs['interval'] = self.config.interval
+        if self.config.name:
+            read_kwargs['name'] = self.config.name
         collectd.register_read(self.update_and_report, **read_kwargs)
 
     def update_and_report(self):

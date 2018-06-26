@@ -155,7 +155,7 @@ def test_full_scoping_and_metrics(collectd_kong, kong_image_and_version, db_imag
             Metric "total_requests" true
             Metric "upstream_latency" true
             ReportHTTPMethods true
-            ReportStatusCodes true
+            ReportStatusCodes false
             ReportStatusCodeGroups false
             ReportAPINames true
             ReportAPIIDs true
@@ -164,6 +164,10 @@ def test_full_scoping_and_metrics(collectd_kong, kong_image_and_version, db_imag
             ReportRouteIDs true
             Verbose true
             ExtraDimension "my_dimension" "my_dimension_value"
+            StatusCodes "1*"
+            StatusCodes "2*"
+            StatusCodes "3*"
+            StatusCodes "4*" "5*"
         </Module>
     </Plugin>
     """)

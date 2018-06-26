@@ -9,13 +9,14 @@ from kong.utils import PatternList
 
 descriptors = {  # Plugin config descriptor to attribute (w/ default value)
     'Host': ('host', None),
+    'Name': ('name', None),
     'URL': ('url', 'http://localhost:8001/signalfx'),
     'AuthHeader': ('auth_header', None),
     'VerifyCerts': ('verify_certs', True),
     'CABundle': ('ca_bundle', None),
     'ClientCert': ('client_cert', None),
     'ClientCertKey': ('client_cert_key', None),
-    'ReportHTTPMethods': ('report_http_methods', False),
+    'ReportHTTPMethods': ('report_http_methods', True),
     'HTTPMethods': ('http_methods_whitelist', None),
     'HTTPMethodsBlacklist': ('http_methods_blacklist', None),
     'ReportStatusCodeGroups': ('report_status_code_groups', True),
@@ -70,7 +71,7 @@ class Config(config.Config):
             val = val if isinstance(val, list) else [val]
             pl = PatternList()
             for item in val:
-                if not isinstance(item, list):
+                if not isinstance(item, (list, tuple)):
                     item = [item]
                 if 'status_code' in pattern_list:
                     value = [text_type(int(v) if isinstance(v, float) else v) for v in item]
