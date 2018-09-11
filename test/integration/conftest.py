@@ -1,11 +1,12 @@
 from shutil import copyfile, rmtree
+from subprocess import check_call
 from tempfile import mkdtemp
 from textwrap import dedent
 from io import BytesIO
+import sys
 import os
 
 from collectdtesting.containers import get_docker_client
-from pip._internal import main as pipmain
 import pytest
 
 
@@ -20,8 +21,10 @@ def collectd_kong():
         kong = absjoin(__file__, '../../')
         plugin = absjoin(__file__, '../../kong_plugin.py')
         tgt = mkdtemp()
-        pipmain(['install', '--upgrade', '--target', tgt, kong])
-        pipmain(['install', '--upgrade', '--target', tgt + '/kong', '-r', pkgs])
+        check_call([sys.executable, '-m', 'pip', 'install', '--upgrade',
+                    '--target', tgt, kong])
+        check_call([sys.executable, '-m', 'pip', 'install', '--upgrade',
+                    '--target', tgt + '/kong', '-r', pkgs])
         copyfile(plugin, tgt + '/kong_plugin.py')
         yield tgt
     finally:
