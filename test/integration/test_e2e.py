@@ -15,9 +15,10 @@ tgt_sfx = '/usr/local/share/lua/5.1/kong/plugins/signalfx'
 src_echo = absjoin(__file__, 'echo.conf')
 
 kong_general_env = dict(KONG_ADMIN_LISTEN='0.0.0.0:8001', KONG_LOG_LEVEL='warn')
-pg_env = dict(POSTGRES_USER='kong', POSTGRES_DB='kong')
+pg_env = dict(POSTGRES_USER='kong', POSTGRES_PASSWORD='pass', POSTGRES_DB='kong')
 cs_env = dict()
-kong_pg_env = dict(kong_general_env, KONG_DATABASE='postgres', KONG_PG_DATABASE='kong')
+kong_pg_env = dict(kong_general_env, KONG_DATABASE='postgres', KONG_PG_DATABASE='kong', KONG_PG_PASSWORD='pass',
+                   PGPASSWORD='pass')
 kong_cs_env = dict(kong_general_env, KONG_DATABASE='cassandra', KONG_CASSANDRA_CONTACT_POINTS='kong')
 
 metrics = {'counter.kong.connections.accepted', 'counter.kong.connections.handled', 'counter.kong.connections.handled',
@@ -178,7 +179,7 @@ def test_full_scoping_and_metrics(collectd_kong, kong_image_and_version, db_imag
         kong_env[key] = db_ip
 
         def db_is_ready():
-            cmd = 'pg_isready -U postgres' if postgres else 'cqlsh localhost'
+            cmd = 'pg_isready -U kong' if postgres else 'cqlsh localhost'
             return db.exec_run(cmd).exit_code == 0
 
         assert wait_for(db_is_ready)
@@ -186,7 +187,7 @@ def test_full_scoping_and_metrics(collectd_kong, kong_image_and_version, db_imag
         with run_container(kong_image, environment=kong_env, command='sleep inf') as migrations:
 
             def db_is_reachable():
-                cmd = 'psql -h {} -U postgres' if postgres else 'cqlsh --cqlversion=3.4.4 {}'
+                cmd = 'psql -h {} -U kong' if postgres else 'cqlsh --cqlversion=3.4.4 {}'
                 return migrations.exec_run(cmd.format(db_ip)).exit_code == 0
 
             assert wait_for(db_is_reachable)
