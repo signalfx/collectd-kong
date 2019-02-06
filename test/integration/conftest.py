@@ -7,6 +7,7 @@ import sys
 import os
 
 from collectdtesting.containers import get_docker_client
+from docker.errors import APIError
 import pytest
 
 
@@ -31,11 +32,13 @@ def collectd_kong():
         rmtree(tgt)
 
 
-@pytest.fixture(scope='session', params=(('0.13-centos', 38), ('0.12-centos', 35), ('0.11', 34)),
-                ids=('13', '12', '11'))
+@pytest.fixture(scope='session',
+                params=(('1.0-centos', 38), ('0.15-centos', 38), ('0.14-centos', 38),
+                        ('0.13-centos', 38), ('0.12-centos', 35), ('0.11', 34)),
+                ids=('10', '015', '014', '013', '012', '011'))
 def kong_image_and_version(request):
     version, shared_dict_line_number = request.param
-    dockerfile = BytesIO(bytes(dedent('''
+    dockerfile = BytesIO(bytes(dedent(r'''
         from kong:{version}
         RUN yum install -y epel-release
         RUN yum install -y python-pip postgresql
@@ -54,4 +57,9 @@ def kong_image_and_version(request):
     try:
         yield image.short_id, version
     finally:
-        client.images.remove(image=image.id, force=True)
+        try:
+            client.images.remove(image=image.id, force=True)
+        except APIError as exc:
+            # conflict errors must be resolved manually
+            if exc.status_code != 409:
+                raise
