@@ -29,9 +29,9 @@ metrics = {'counter.kong.connections.accepted', 'counter.kong.connections.handle
 
 
 def configure_kong(kong_admin, kong_version, echo):
-    service_paths = []
     object_ids = set()
-    if '13' in kong_version:
+    service_paths = []
+    if kong_version >= '0.13-centos':
         service_paths = ['sOne', 'sTwo', 'sThree']
         for service_path in service_paths:
             service = post(kong_admin + '/services',
@@ -43,12 +43,14 @@ def configure_kong(kong_admin, kong_version, echo):
             assert route.status_code == 201
             object_ids.add(route.json()['id'])
 
-    api_paths = ['aOne', 'aTwo', 'aThree']
-    for api_path in api_paths:
-        api = post(kong_admin + '/apis', json=dict(name=api_path, uris=['/' + api_path],
-                                                   upstream_url='http://{}:8080/echo'.format(echo)))
-        assert api.status_code == 201
-        object_ids.add(api.json()['id'])
+    api_paths = []
+    if kong_version < '1.0':
+        api_paths = ['aOne', 'aTwo', 'aThree']
+        for api_path in api_paths:
+            api = post(kong_admin + '/apis', json=dict(name=api_path, uris=['/' + api_path],
+                                                       upstream_url='http://{}:8080/echo'.format(echo)))
+            assert api.status_code == 201
+            object_ids.add(api.json()['id'])
 
     kong_plugins = kong_admin + '/plugins'
     enable = post(kong_plugins, json=dict(name='signalfx'))
@@ -191,6 +193,9 @@ def test_full_scoping_and_metrics(collectd_kong, kong_image_and_version, db_imag
                 return migrations.exec_run(cmd.format(db_ip)).exit_code == 0
 
             assert wait_for(db_is_reachable)
+
+            if kong_version > '0.14-centos':
+                assert migrations.exec_run('kong migrations bootstrap --v').exit_code == 0
             assert migrations.exec_run('kong migrations up --v').exit_code == 0
 
         with run_container(kong_image, environment=kong_env, ports={'8000/tcp': None, '8001/tcp': None},

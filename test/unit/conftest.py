@@ -13,7 +13,7 @@ from kong.config import Config  # noqa
 
 @pytest.fixture(scope='session', params=('status.json', 'status_snapshot_1.json', 'status_snapshot_2.json'))
 def kong_state(request):
-    return kong_state_from_file()(request.param)
+    return request.getfixturevalue('kong_state_from_file')(request.param)
 
 
 @pytest.fixture(scope='session')
