@@ -9,7 +9,7 @@ jobs:
       - run:
           name: Run basic tests
           working_directory: /opt/code
-          command: tox -e py26,py27,py35,py36,flake8
+          command: tox -e py27,py35,py36,flake8
   integration_tests:
     machine:
       image: circleci/classic:201711-01
