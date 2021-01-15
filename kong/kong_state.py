@@ -73,8 +73,7 @@ class KongState(object):
         if self.auth_header:
             header, value = self.auth_header
             kw['headers'] = {header: value}
-        if self.verify_certs or self.ca_bundle:
-            kw['verify'] = self.ca_bundle if self.ca_bundle else True
+        kw['verify'] = self.ca_bundle if self.ca_bundle else self.verify_certs
         if self.client_cert:
             kw['cert'] = self.client_cert if not self.client_cert_key else (self.client_cert, self.client_cert_key)
         r = get(**kw)
