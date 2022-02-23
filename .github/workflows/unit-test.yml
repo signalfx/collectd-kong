@@ -1,0 +1,21 @@
+name: Unit Test
+
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  unit-test:
+    name: unit-test
+    runs-on: ubuntu-latest
+    container:
+      image: themattrix/tox
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v2
+
+      - name: Run tests
+        run: tox -e py27,py35,py36,flake8
