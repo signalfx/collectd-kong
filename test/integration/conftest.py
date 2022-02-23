@@ -42,7 +42,8 @@ def kong_image_and_version(request):
         from kong:{version}
         RUN yum install -y epel-release
         RUN yum install -y python-pip postgresql
-        RUN pip install cqlsh
+        RUN pip install click==7.1.2
+        RUN pip install cqlsh==5.0.5
         WORKDIR /usr/local/share/lua/5.1/kong
         RUN sed -i '{line_num}ilua_shared_dict kong_signalfx_aggregation 10m;' templates/nginx_kong.lua
         RUN sed -i '{line_num}ilua_shared_dict kong_signalfx_locks 100k;' templates/nginx_kong.lua
