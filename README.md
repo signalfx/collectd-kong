@@ -1,5 +1,7 @@
 >ℹ️&nbsp;&nbsp;SignalFx was acquired by Splunk in October 2019. See [Splunk SignalFx](https://www.splunk.com/en_us/investor-relations/acquisitions/signalfx.html) for more information.
 
+# :warning: This plugin is no longer maintained and has reached End Of Support.
+
 # Kong CollectD Plugin
 
 A [collectd](https://collectd.org/) plugin for aggregating and reporting metrics made available by the 
